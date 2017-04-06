@@ -70,7 +70,7 @@ public class ProcessLog {
 		} else {
 			totalVisits.put(host, 1);
 		}
-		    
+
 	    	//Count total number of times a resource is accessed
 	    	//for use in bandwidth consumption calculation
 	    	//while simultaneously tracking the number of bytes
@@ -149,7 +149,7 @@ public class ProcessLog {
 		PriorityQueue<MappedPair> topHosts = toQueue (dataMap);
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-			
+
 			int i = 0;
 			while (i < 10 && !topHosts.isEmpty()) {
 	            	bufferedWriter.write(topHosts.peek().getKey()+","+topHosts.peek().getValue());
@@ -168,7 +168,7 @@ public class ProcessLog {
 	//for efficient retrieval of top 10 mapped values
 	private static void writeTopTen(TreeMap<String, Integer> dataMap, String file) throws ParseException {
 
-		HashMap<String, Integer> frequency = performTimeComparisons(dataMap);
+		TreeMap<String, Integer> frequency = performTimeComparisons(dataMap);
 		PriorityQueue<MappedPair> topHours = toQueue (frequency);
 
 		try {
@@ -233,9 +233,9 @@ public class ProcessLog {
 	//hour time frame, calculated using a modified key set starting from time to time+one hour to increase efficiency
 	//over simply iterating through the entire key set. After timing, the modified version took about 1/3 of
 	//the time on a sample set of ~250 lines
-	private static HashMap<String, Integer> performTimeComparisons(TreeMap<String, Integer> frequencyVisited) throws ParseException {
+	private static TreeMap<String, Integer> performTimeComparisons(TreeMap<String, Integer> frequencyVisited) throws ParseException {
 
-		HashMap<String, Integer> freq = new HashMap<String, Integer>();
+		TreeMap<String, Integer> freq = new TreeMap<String, Integer>();
 		SortedMap<String, Integer> modKeySet;
 		//String startTimeCount = "01/Jul/1995:00:00:01 -0400";
 		//Retrieve the first time window in map frequencyVisited, utilizing ordered keys to ensure it is smallest key
@@ -259,7 +259,7 @@ public class ProcessLog {
 			String s = format.format(start), e = format.format(end), modE = format.format(lastTimeInMap);
 			//System.out.println("START: "+s+" END: "+e+" MODEND: "+modE);
 			//Retrieve modified set of keys to iterate through that only include keys within the time range				//and add all of their frequencies for total times accessed during the hour time period
-				
+
 			if (lastTimeInMap.before(end) || lastTimeInMap.equals(end))
 				modKeySet = frequencyVisited.subMap(s, true, modE, true);
 			else

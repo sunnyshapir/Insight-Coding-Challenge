@@ -18,24 +18,24 @@ public class ProcessLog {
 
 	public static void main(String[] args) throws Exception {
 
-		String line, host, time, resource, tHttp, tBytes;
+	    String line, host, time, resource, tHttp, tBytes;
 	    int http, bytes;
 
 	    //Feature 1
 	    HashMap<String, Integer> totalVisits = new HashMap<String, Integer>();
 
 	    //Feature 2
-	  	HashMap<String, Integer> resourceFreq = new HashMap<String, Integer>();
-	  	HashMap<String, Integer> resourceBytes = new HashMap<String, Integer>();
+	    HashMap<String, Integer> resourceFreq = new HashMap<String, Integer>();
+	    HashMap<String, Integer> resourceBytes = new HashMap<String, Integer>();
 
-	  	//Feature 3
-	  	TreeMap<String, Integer> frequencyVisited = new TreeMap<String, Integer>();
+	    //Feature 3
+	    TreeMap<String, Integer> frequencyVisited = new TreeMap<String, Integer>();
 
-	  	//Feature 4
-			LinkedHashMap<String, LoginAttempt> userAuth = new LinkedHashMap<String, LoginAttempt>();
-			ArrayList<String> blockedUsers = new ArrayList<String>();
+	    //Feature 4
+	    LinkedHashMap<String, LoginAttempt> userAuth = new LinkedHashMap<String, LoginAttempt>();
+	    ArrayList<String> blockedUsers = new ArrayList<String>();
 
-			FileReader in = new FileReader(args[0]);
+	    FileReader in = new FileReader(args[0]);
 	    BufferedReader br = new BufferedReader(in);
 
 	    while ((line = br.readLine()) != null) {
@@ -65,11 +65,11 @@ public class ProcessLog {
 
 	    	//Count total number of times a host was active
 	    	if (totalVisits.containsKey(host)) {
-				int total = totalVisits.get(host);
-				totalVisits.put(host, total+1);
-			} else {
-				totalVisits.put(host, 1);
-			}
+			int total = totalVisits.get(host);
+			totalVisits.put(host, total+1);
+		} else {
+			totalVisits.put(host, 1);
+		}
 
 	    	//Count total number of times a resource is accessed
 	    	//for use in bandwidth consumption calculation
@@ -77,12 +77,12 @@ public class ProcessLog {
 	    	//associated with each resource
 	    	if (tBytes != null) {
 		        if (resourceFreq.containsKey(resource)) {
-					int total = resourceFreq.get(resource);
-					resourceFreq.put(resource, total+1);
-					} else {
-					resourceFreq.put(resource, 1);
-					resourceBytes.put(resource, bytes);
-					}
+				int total = resourceFreq.get(resource);
+				resourceFreq.put(resource, total+1);
+			} else {
+				resourceFreq.put(resource, 1);
+				resourceBytes.put(resource, bytes);
+			}
 	       }
 
 	    	//Counts total number of times there was activity at each given time
@@ -111,15 +111,14 @@ public class ProcessLog {
 	    			int attempt = (userAuth.get(host)).validate(time);
 	    			if (attempt == 0) {
 	    				//Compile list of blocked users and write to file blocked.txt
-							String temp = "";
+					String temp = "";
 	    				for (int i = 0; i < tokens.length; i++){
-								if (i > 0 && i < tokens.length)
-									temp += " ";
-								temp += tokens[i];
-								}
-	    				blockedUsers.add(temp);
+						if (i > 0 && i < tokens.length)
+							temp += " ";
+							temp += tokens[i];
 						}
-	    			else if (attempt == -1)
+	    				blockedUsers.add(temp);
+				} else if (attempt == -1)
 	    				//Unblock
 		    			(userAuth.get(host)).clearBlock (time);
 	    		} else {
@@ -144,16 +143,15 @@ public class ProcessLog {
 
 	}
 
-		//Writes 10 most active hosts using a HashMap (utilizing efficient updates/retrievals
-		//for two logical data pairs and a priority queue for efficient retrieval of top 10 values
-		private static void writeTopTen(HashMap<String, Integer> dataMap, String file) {
-			PriorityQueue<MappedPair> topHosts = toQueue (dataMap);
+	//Writes 10 most active hosts using a HashMap (utilizing efficient updates/retrievals
+	//for two logical data pairs and a priority queue for efficient retrieval of top 10 values
+	private static void writeTopTen(HashMap<String, Integer> dataMap, String file) {
+		PriorityQueue<MappedPair> topHosts = toQueue (dataMap);
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
 
-			try {
-				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-
-				int i = 0;
-	            while (i < 10 && !topHosts.isEmpty()) {
+			int i = 0;
+			while (i < 10 && !topHosts.isEmpty()) {
 	            	bufferedWriter.write(topHosts.peek().getKey()+","+topHosts.peek().getValue());
 	            	topHosts.poll();
 	            	if (i < 9)
@@ -164,19 +162,19 @@ public class ProcessLog {
 			} catch(IOException ex) {
 	            System.out.println("Error writing to file");
 	        }
-		}
+	}
 
-		//Writes 10 busiest hours to file using a TreeMap (utilizing sorted time keys) and a priority queue
-		//for efficient retrieval of top 10 mapped values
-		private static void writeTopTen(TreeMap<String, Integer> dataMap, String file) throws ParseException {
+	//Writes 10 busiest hours to file using a TreeMap (utilizing sorted time keys) and a priority queue
+	//for efficient retrieval of top 10 mapped values
+	private static void writeTopTen(TreeMap<String, Integer> dataMap, String file) throws ParseException {
 
-			HashMap<String, Integer> frequency = performTimeComparisons(dataMap);
-		    PriorityQueue<MappedPair> topHours = toQueue (frequency);
+		TreeMap<String, Integer> frequency = performTimeComparisons(dataMap);
+		PriorityQueue<MappedPair> topHours = toQueue (frequency);
 
-		    try {
-				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-				int i = 0;
-	            while (i < 10 && !topHours.isEmpty()) {
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+			int i = 0;
+			while (i < 10 && !topHours.isEmpty()) {
 	            	bufferedWriter.write(topHours.peek().getKey()+","+topHours.peek().getValue());
 	            	topHours.poll();
 	            	if (i < 9)
@@ -188,7 +186,7 @@ public class ProcessLog {
 	        catch(IOException ex) {
 	            System.out.println("Error writing to file");
 	        }
-		}
+	}
 
 	//Writes 10 most costly resources using a HashMap (utilizing efficient updates/retrievals
 	//for two logical data pairs and a priority queue for efficient retrieval of top 10 values
@@ -238,55 +236,55 @@ public class ProcessLog {
 	//hour time frame, calculated using a modified key set starting from time to time+one hour to increase efficiency
 	//over simply iterating through the entire key set. After timing, the modified version took about 1/3 of
 	//the time on a sample set of ~250 lines
-	private static HashMap<String, Integer> performTimeComparisons(TreeMap<String, Integer> frequencyVisited) throws ParseException {
+	private static TreeMap<String, Integer> performTimeComparisons(TreeMap<String, Integer> frequencyVisited) throws ParseException {
 
-			HashMap<String, Integer> freq = new HashMap<String, Integer>();
-			SortedMap<String, Integer> modKeySet;
-			//String startTimeCount = "01/Jul/1995:00:00:01 -0400";
-			//Retrieve the first time window in map frequencyVisited, utilizing ordered keys to ensure it is smallest key
-			String startTimeCount = frequencyVisited.firstEntry().getKey();
-			String toReplace = startTimeCount.substring(12, 20);
-			startTimeCount.replace(toReplace, "00:00:01");
+		TreeMap<String, Integer> freq = new TreeMap<String, Integer>();
+		SortedMap<String, Integer> modKeySet;
+		//String startTimeCount = "01/Jul/1995:00:00:01 -0400";
+		//Retrieve the first time window in map frequencyVisited, utilizing ordered keys to ensure it is smallest key
+		String startTimeCount = frequencyVisited.firstEntry().getKey();
+		String toReplace = startTimeCount.substring(12, 20);
+		startTimeCount.replace(toReplace, "00:00:01");
 
-			SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-			//Covert startTimeCount to Date object for comparisons
-			Date start = format.parse(startTimeCount);
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(start);
-			calendar.add(Calendar.HOUR, 1);
-			//Add one hour to startTimeCount retrieve Date object for end time
-			Date end = calendar.getTime();
-			//Retrieve the last time in map frequencyVisited, utilizing ordered keys to ensure it is largest key
-			Date lastTimeInMap = format.parse(frequencyVisited.lastEntry().getKey());
+		SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
+		//Covert startTimeCount to Date object for comparisons
+		Date start = format.parse(startTimeCount);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(start);
+		calendar.add(Calendar.HOUR, 1);
+		//Add one hour to startTimeCount retrieve Date object for end time
+		Date end = calendar.getTime();
+		//Retrieve the last time in map frequencyVisited, utilizing ordered keys to ensure it is largest key
+		Date lastTimeInMap = format.parse(frequencyVisited.lastEntry().getKey());
 
-			while (start.before(lastTimeInMap) || start.equals(lastTimeInMap)) {
-				int total = 0;
-				String s = format.format(start), e = format.format(end), modE = format.format(lastTimeInMap);
-				//System.out.println("START: "+s+" END: "+e+" MODEND: "+modE);
-				//Retrieve modified set of keys to iterate through that only include keys within the time range
-				//and add all of their frequencies for total times accessed during the hour time period
-				if (lastTimeInMap.before(end) || lastTimeInMap.equals(end))
-					modKeySet = frequencyVisited.subMap(s, true, modE, true);
-				else
-					modKeySet = frequencyVisited.subMap(s, true, e, true);
+		while (start.before(lastTimeInMap) || start.equals(lastTimeInMap)) {
+			int total = 0;
+			String s = format.format(start), e = format.format(end), modE = format.format(lastTimeInMap);
+			//System.out.println("START: "+s+" END: "+e+" MODEND: "+modE);
+			//Retrieve modified set of keys to iterate through that only include keys within the time range				//and add all of their frequencies for total times accessed during the hour time period
 
-				for (String key2 : modKeySet.keySet())
+			if (lastTimeInMap.before(end) || lastTimeInMap.equals(end))
+				modKeySet = frequencyVisited.subMap(s, true, modE, true);
+			else
+				modKeySet = frequencyVisited.subMap(s, true, e, true);
+
+			for (String key2 : modKeySet.keySet())
 				total += frequencyVisited.get(key2);
 
-				//Add values to hash map of (time frame, total) pairs
-				freq.put(s, total);
+			//Add values to hash map of (time frame, total) pairs
+			freq.put(s, total);
 
-				//Obtain indices for next hour time frame
-				calendar.setTime(start);
-				calendar.add(Calendar.SECOND, 1);
-				start = calendar.getTime();
-				calendar.setTime(start);
-				calendar.add(Calendar.HOUR, 1);
-				end = calendar.getTime();
-				}
+			//Obtain indices for next hour time frame
+			calendar.setTime(start);
+			calendar.add(Calendar.SECOND, 1);
+			start = calendar.getTime();
+			calendar.setTime(start);
+			calendar.add(Calendar.HOUR, 1);
+			end = calendar.getTime();
+			}
 
-			return freq;
-		}
+		return freq;
+	}
 
 	//Returns the end index for a modified key set starting from time to time+one hour to increase efficiency
 	//over simply iterating through the entire key set - after timing, the modified version took about 1/3 of
@@ -325,7 +323,7 @@ public class ProcessLog {
 		for (String key : resourceFreq.keySet()) {
 			//Calculates bandwidth consumption by multiplying frequency by number of bytes
 			resourceConsumption.add(new MappedPair(key, resourceFreq.get(key)*resourceBytes.get(key)));
-        }
+        	}
 		return resourceConsumption;
 	}
 }
