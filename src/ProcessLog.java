@@ -169,7 +169,7 @@ public class ProcessLog {
 	private static void writeTopTen(TreeMap<String, Integer> dataMap, String file) throws ParseException {
 
 		TreeMap<String, Integer> frequency = performTimeComparisons(dataMap);
-		PriorityQueue<MappedPair> topHours = toQueue (frequency);
+		PriorityQueue<TimePair> topHours = toQueue (frequency);
 
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
@@ -305,10 +305,10 @@ public class ProcessLog {
 		return newPriorityQueue;
 	}
 
-	public static PriorityQueue<MappedPair> toQueue (TreeMap<String, Integer> mapToConvert) {
-		PriorityQueue<MappedPair> newPriorityQueue = new PriorityQueue<MappedPair>();
+	public static PriorityQueue<TimePair> toQueue (TreeMap<String, Integer> mapToConvert) {
+		PriorityQueue<TimePair> newPriorityQueue = new PriorityQueue<TimePair>();
 		for (String key : mapToConvert.keySet()) {
-			newPriorityQueue.add (new MappedPair(key, mapToConvert.get(key)));
+			newPriorityQueue.add (new TimePair(key, mapToConvert.get(key)));
 		}
 		return newPriorityQueue;
 	}
