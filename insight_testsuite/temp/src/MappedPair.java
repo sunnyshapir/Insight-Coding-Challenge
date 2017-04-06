@@ -46,12 +46,11 @@ public class MappedPair implements Comparable<MappedPair> {
 	    char[] chars = key.toCharArray();
 
 	    for (char c : chars) {
-	        if(!Character.isLetter(c))
-            if (!(c == '/'))
-              if (!(c == '.'))
-	            return false;
+	    	if(!Character.isLetter(c))
+            	   if (!(c == '/'))
+              	      if (!(c == '.'))
+	            	return false;
 	    }
-
 	    return true;
 	}
 }
