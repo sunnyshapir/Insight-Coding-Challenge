@@ -198,19 +198,17 @@ public class ProcessLog {
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
 
 			int i = 0;
-            while (i < 10 && !resourceConsumption.isEmpty()) {
-            	bufferedWriter.write(resourceConsumption.peek().getKey());
-            	resourceConsumption.poll();
-            	if (i < 9)
-            		bufferedWriter.newLine();
-            	i++;
-            }
-            bufferedWriter.close();
-		}
-        catch(IOException ex) {
-            System.out.println("Error writing to file");
-        }
-
+           		while (i < 10 && !resourceConsumption.isEmpty()) {
+            			bufferedWriter.write(resourceConsumption.peek().getKey());
+            			resourceConsumption.poll();
+            			if (i < 9)
+            				bufferedWriter.newLine();
+            			i++;
+            		}
+           		bufferedWriter.close();
+		} catch(IOException ex) {
+            		System.out.println("Error writing to file");
+        	}
 	}
 
 	//Writes all blocked users as in order of processing
@@ -219,16 +217,15 @@ public class ProcessLog {
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
 
-            for (int i = 0; i < blockedUsers.size(); i++) {
-            	bufferedWriter.write(blockedUsers.get(i));
-            	if (i < blockedUsers.size() - 1)
-            		bufferedWriter.newLine();
-            }
-            bufferedWriter.close();
-        }
-        catch(IOException ex) {
-            System.out.println("Error writing to file");
-        }
+            		for (int i = 0; i < blockedUsers.size(); i++) {
+            			bufferedWriter.write(blockedUsers.get(i));
+            			if (i < blockedUsers.size() - 1)
+            				bufferedWriter.newLine();
+            		}
+            	bufferedWriter.close();
+        	} catch(IOException ex) {
+            		System.out.println("Error writing to file");
+        	}
 
 	}
 
